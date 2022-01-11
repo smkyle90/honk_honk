@@ -7,9 +7,10 @@ if __name__ == '__main__':
 
 	pubber = Pubber(addr, port)
 	img = Imager()
-
+	i = 0
 	while True:
+		print(f"Loop {i}")
 		img.read()
 		img_json = img.as_json()
 		pubber.pub(img_json)
-		time.sleep(1)
+		i+=1
