@@ -13,8 +13,11 @@ import numpy as np
 
 
 class Detector(Subber):
-    def __init__(self, addr, port, save_categories=None, show_video=False):
+    def __init__(self, addr, port, save_categories=None, show_video=False, use_zmq=False):
         super().__init__(addr, port)
+        
+        self.use_zmq = use_zmq
+        self.cap = cv2.VideoCapture("http://{}:8081".format(addr))
 
         self.show_video = show_video
 
@@ -92,9 +95,14 @@ class Detector(Subber):
 
     def get_frame(self):
         while True:
-            img_json = self.sub()
-            img_data = json.loads(img_json)
-            img_arr = np.asarray(img_data).astype(np.uint8)
+            if self.use_zmq:
+                img_json = self.sub()
+                img_data = json.loads(img_json)
+                img_arr = np.asarray(img_data).astype(np.uint8)
+            elif self.cap.isOpened():
+                ret, img_arr = self.cap.read()
+            else:
+                raise RuntimeError("Need to get frames from zmq or http.") 
 
             frame_rgb = cv2.cvtColor(img_arr, cv2.COLOR_BGR2RGB)
             
@@ -120,9 +128,9 @@ class Detector(Subber):
 
             darknet.print_detections(detections, self.args.ext_output)
             darknet.free_image(darknet_image)
-            
-    def check_detections(self, detections, img):
         
+    def check_detections(self, detections, img):
+
         self.__save_img = False
 
         if self.save_categories is None:

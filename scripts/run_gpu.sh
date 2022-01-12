@@ -18,5 +18,6 @@ docker run --gpus all -it --rm --network host --privileged \
   --name=${CONTAINER_NAME} \
   imgs:gpu \
   python3 detector.py
+  # /bin/bash
 
 xhost -local:

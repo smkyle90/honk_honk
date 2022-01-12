@@ -4,6 +4,7 @@ RUN apt-get update && apt-get install -y  --no-install-recommends \
 	ffmpeg \
 	libsm6 \
 	libxext6 \
+	motion \
 	python3-tk \
     && rm -rf /var/lib/apt/lists/*
 
@@ -15,4 +16,8 @@ RUN pip install -r requirements.txt
 
 WORKDIR /imgs
 
-CMD /bin/bash
+# As per https://www.instructables.com/How-to-Make-Raspberry-Pi-Webcam-Server-and-Stream-/
+COPY ./config/motion.conf /etc/motion
+COPY ./config/motion /etc/default
+
+CMD ./scripts/start.sh

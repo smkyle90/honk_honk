@@ -1,2 +1,6 @@
 *.weights
 *.jpeg
+
+vid
+__pycache__
+*.pyc
